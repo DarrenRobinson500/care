@@ -1,0 +1,38 @@
+{% extends 'base.html'%}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+<h1>{{ model.plural }}</h1>
+<a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'new' model.model_str %}">New {{ model.single }}</a>
+
+<table class="table">
+    <tr><th>Order</th><th>Name</th><th>Permission</th><th>Actions</th></tr>
+    {% for item in items %}
+        <tr {% if item == staff %} style="background-color:#EEEEEE;" {% endif %}>
+            <td>
+                <a href="{% url 'order' model.model_str -1 item.id %}"><i class="fas fa-sort-up"></i></a>
+                {{ item.order }}
+                <a href="{% url 'order' model.model_str 1 item.id %}"><i class="fas fa-sort-down"></i></a>
+            <td>
+                {% if item.on_duty %}
+                    <i class="fas fa-circle" style="color:#95C74E;"></i>
+                {% else %}
+                    <i class="fas fa-circle" style="color:lightgrey;"></i></a>
+                {% endif %}
+                <a href="{% url 'ind' model.model_str item.id %}">{{ item.name }}</a><br>
+            </td>
+            <td>
+                {{ item.user_type }}
+            </td>
+        <td>
+            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'active' model.model_str item.id %}">Active</a>
+            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'ind' model.model_str item.id %}">View</a>
+            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' model.model_str item.id %}">Edit</a>
+            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'delete' model.model_str item.id %}">Delete</a>
+        </td>
+        </tr>
+    {% endfor %}
+</table>
+
+
+{% endblock %}

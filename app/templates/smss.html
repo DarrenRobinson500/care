@@ -1,0 +1,24 @@
+{% extends 'base.html'%}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+<h1>{{ model.plural }}</h1>
+
+<table class="table">
+    <tr><th>Staff</th><th>Patient</th><th>Sender</th><th>Content</th><th>Sent</th></tr>
+    {% for item in items %}
+        <tr>
+            <td>{{ item.staff }}</td>
+            <td>{{ item.patient }}</td>
+            <td>{{ item.sender }}</td>
+            <td>{{ item.content }}</td>
+            <td>{{ item.date_time_completed }}</td>
+        <td>
+            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'delete' model.model_str item.id %}">Delete</a>
+        </td>
+        </tr>
+    {% endfor %}
+</table>
+
+
+{% endblock %}

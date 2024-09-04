@@ -1,0 +1,14 @@
+
+
+.btn-care {
+    color: black;
+    background-color: #50CDE6;
+    border-color: #50CDE6
+    padding: 10px
+}
+
+
+.django-ckeditor-widget {
+  width: 100%;
+  height: 50px;
+}

@@ -1,0 +1,85 @@
+{% extends 'base.html'%}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+<h1>{{ model.plural }}</h1>
+<a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'new' model.model_str %}">New {{ model.single }}</a>
+<br>
+
+<h1>Unallocated Jobs</h1>
+<table class="table">
+    <tr><th>Job Type</th><th>Patient</th><th>Available Staff</th><th>Times</th><th>Requested</th><th>Completed</th><th>Notes</th><th>Actions</th></tr>
+    {% for item in items_unallocated %}
+        <tr>
+            <td>{{ item.jobtype }}</td>
+            <td><a href="{% url 'ind' 'patient' item.patient.id %}">{{ item.patient.name }}</a></td>
+            <td>
+                {% if item.staff %}
+                    <a href="{% url 'ind' 'staff' item.staff.id %}">{{ item.staff.name }}</a>
+                {% else %}
+                    {% for shift in item.available_shifts %}
+                        {% if shift.staff %}
+                            <a href="{% url 'allocate_job' item.id shift.staff.id %}">{{ shift.staff }}</a><br>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </td>
+            <td>{{ item.times }}</td>
+            <td>{{ item.date_time_requested }}</td>
+            <td>{{ item.date_time_completed }}</td>
+            <td>{{ item.notes }}</td>
+        <td>
+            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' model.model_str item.id %}">Edit</a>
+            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'delete' model.model_str item.id %}">Delete</a>
+        </td>
+        </tr>
+    {% endfor %}
+</table>
+
+<h1>Open Allocated Jobs</h1>
+<table class="table">
+    <tr><th>Job Type</th><th>Patient</th><th>Staff</th><th>Times</th><th>Requested</th><th>Completed</th><th>Notes</th><th>Actions</th></tr>
+    {% for item in items_open %}
+        <tr>
+            <td>{{ item.jobtype }}</td>
+            <td><a href="{% url 'ind' 'patient' item.patient.id %}">{{ item.patient.name }}</a></td>
+            <td>
+                <a class="btn btn-care btn-sm" style="background-color: {{ colour }};" href="{% url 'sms_job' model.model_str item.id %}">SMS</a>
+                <a href="{% url 'ind' 'staff' item.staff.id %}">{{ item.staff.name }}</a>
+            </td>
+            <td>{{ item.times }}</td>
+            <td>{{ item.date_time_requested }}</td>
+            <td>{{ item.date_time_completed }}</td>
+            <td>{{ item.notes }}</td>
+        <td>
+            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' model.model_str item.id %}">Edit</a>
+            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'delete' model.model_str item.id %}">Delete</a>
+        </td>
+        </tr>
+    {% endfor %}
+</table>
+
+{% for day_adj, string, days_jobs in upcoming_jobs %}
+    {% if days_jobs %}
+        <H1>{{ string }}'s Recurring Jobs (not yet added)</H1>
+        <a class="btn btn-care" href="{% url 'add_upcoming_jobs' day_adj %}">Create jobs</a>
+        <table class="table">
+            <tr><th>Job Type</th><th>Patient</th><th>Frequency</th><th>Actions</th></tr>
+            {% for item in days_jobs %}
+                <tr>
+                    <td>{{ item.jobtype }}</td>
+                        {% if item.patient %}
+                            <td><a href="{% url 'ind' 'patient' item.patient.id %}">{{ item.patient.name }}</a></td>
+                        {% endif %}
+                    <td>{{ item.frequency }}</td>
+                <td>
+                    <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'ind' 'recurringjob' item.id %}">View</a>
+                </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+{% endfor %}
+
+
+{% endblock %}

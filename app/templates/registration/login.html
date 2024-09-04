@@ -1,0 +1,24 @@
+{% extends 'base.html'%}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+<div class="row">
+    <div class="col-4"></div>
+    <div class="col-4">
+      <h1>Login</h1>
+      <form method="post" class="row">
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label class="form-label">Username</label>
+          <input type="text" class="form-control" name="username">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-control" name="password">
+        </div>
+        <button type="submit" style="background-color: {{ colour }};" class="btn btn-care mb-3">Log in</button>
+      </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'base.html'%}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+<h2>Files</h2>
+<a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'file_upload' 'file' %}" >Upload File</a>
+<br>
+<hr>
+    {% for item in items %}
+        <h3>{{ forloop.counter }}. {{ item }}</h3>
+        {% if item.document %}
+            Link: <a href="{{ item.document.url }}" target="_blank">{{item.name }}</a><br>
+        {% endif %}
+        Upload: {{item.time_stamp|date:"j M Y (g:i)"}}<br>
+        Model: {{ item.type }}<br><br>
+
+        {{ item.html | safe }}
+        <br>
+        <a href="{% url 'file_to_db' 'file' item.id %}" style="background-color: {{ colour }};" class='btn btn-yak'>Load into DB</a>
+        <a class="btn btn-yak" href="{% url 'delete' 'file' item.id %}" style="background-color: {{ colour }};" >Delete File</a>
+        <br>
+        <hr>
+    {% endfor %}
+<br><br>
+{% endblock %}

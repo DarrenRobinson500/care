@@ -1,0 +1,125 @@
+{% extends 'base.html'%}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+<h1>{{ item.name }}</h1>
+
+{% if item.on_duty %}<h3 style="color: green;">On Duty</h3>{% else %}<h3>Off Duty</h3>{% endif %}
+
+<h1>Notes</h1>
+<div class="row">
+    {% for note in item.notes %}
+    <div class="col-3">
+        <h5>{{ note.heading }}</h5>
+        {{ note.content }}<br>
+        <i>by {{ note.created_by }}</i><br>
+        <a href="{% url 'edit' 'note' note.id %}">edit</a>
+    </div>
+    {% endfor %}
+</div><br>
+<a href="{% url 'add_note' model.model_str item.id %}">Add Note</a>
+
+<h1>Information</h1>
+<div class="row">
+    <div><table>
+    {% for info in item.info %}
+        {% ifchanged info.category %}
+        </table></div>
+        <div class="col-3">
+        <h5>{{ info.category }}</h5>
+            <table class="table">
+
+        {% endifchanged %}
+            <tr>
+                <td>{{ info.field }}</td>
+                <td>{{ info.content }}
+                    {% if info.field == "Mobile" %}
+                        <a href="{% url 'test_sms' 'info' info.id %}">test</a>
+                    {% endif %}</td>
+                <td><a href="{% url 'edit' 'info' info.id %}">edit</a></td>
+            </tr>
+    {% endfor %}
+    </table></div>
+</div>
+
+{% if item == staff %}
+    <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'action' 'increment_colour' 'staff' model.model_str item.id %}">New Colour</a>
+{% endif %}
+
+<h1>Open Jobs</h1>
+<table class="table">
+    <tr><th>Patient</th><th>Staff</th><th>Times</th><th>Actions</th></tr>
+    {% for i in item.open_jobs %}
+        <tr>
+            <td>{{ i.jobtype }}</td>
+            <td>
+                {% if i.patient %}
+                    <a href="{% url 'ind' 'patient' i.patient.id %}">{{ i.patient.name }}</a>
+                {% endif %}
+            </td>
+            <td>{{ i.times }}</td>
+        <td>
+            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'action' 'complete' 'staff' 'job' i.id %}">Complete</a>
+        </td>
+        </tr>
+    {% endfor %}
+</table>
+
+<h1>Completed Jobs</h1>
+<table class="table">
+    <tr><th>Job Type</th><th>Patient</th><th>Received</th><th>Completed</th><th>Actions</th></tr>
+    {% for i in item.recent_jobs %}
+        <tr>
+            <td>{{ i.jobtype }}</td>
+            <td>
+                {% if i.patient %}
+                    <a href="{% url 'ind' 'patient' i.patient.id %}">{{ i.patient.name }}</a>
+                {% endif %}
+            </td>
+            <td>{{ i.date_time_received }}</td>
+            <td>{{ i.date_time_completed }}</td>
+        <td>
+            <a href="{% url 'action' 'complete' 'staff' 'job' i.id %}">Mark as 'Not Complete'</a>
+        </td>
+        </tr>
+    {% endfor %}
+</table>
+
+<h1>Shifts</h1>
+<table class="table">
+    <tr><th></th>{% for shift in item.available_shifts %}<th>{{ shift }}</th>{% endfor %}</tr>
+    {% for day, day_adj, shifts in item.next_fortnight %}
+    <tr>
+        <td>{{ day }}</td>
+        {% for shift in shifts %}
+            <td>
+                {% if shift.1 %}
+                    <i class="fas fa-circle" style="color:green;"></i>
+                {% else %}
+                    <a href="{% url 'add_shift' day_adj shift.0 item.id %}"><i class="fas fa-circle" style="color:lightgrey;"></i></a>
+                {% endif %}
+            </td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+
+<h1>Shifts</h1>
+<table class="table">
+    <tr><th>Date</th><th>Shift</th><th>Actions</th></tr>
+    {% for i in item.shifts %}
+        <tr>
+            <td>{{ i.date }}</td>
+            <td>{{ i.shift }}</td>
+        <td>
+            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'ind' 'shift' i.id %}">View</a>
+            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' 'shift' i.id %}">Edit</a>
+            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'delete' 'shift' i.id %}">Delete</a>
+        </td>
+        </tr>
+    {% endfor %}
+</table>
+
+
+
+{% endblock %}

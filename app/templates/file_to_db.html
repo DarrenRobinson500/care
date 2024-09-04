@@ -1,0 +1,11 @@
+{% extends 'base.html'%}
+{% block content %}
+<h1>The following data has been loaded into the Database</h1>
+
+<h3>Spreadsheet</h3>
+{{ spreadsheet | safe }}
+<h3>Database</h3>
+{{ db_html | safe }}
+<br><hr>
+
+{% endblock %}

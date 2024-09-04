@@ -1,0 +1,21 @@
+{% extends 'base.html'%}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+<div class="row">
+    <div class="col-3"></div>
+    <div class="col-6">
+        {% if model.single == "Information" %}
+        <h1>{{ mode}} '{{item.info_field }}' for '{{ item.parent }}'</h1>
+        {% else %}
+        <h1>{{ mode}} {{ model.single }}</h1>
+        {% endif %}
+
+        <form class="form-inline my-2 my-lg-0" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-care"style="background-color: {{ colour }};" >Save {{ model_str | capfirst }}</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

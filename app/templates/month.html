@@ -1,0 +1,25 @@
+{% extends 'base.html'%}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+<h1>{{ item }}</h1>
+
+<table class="table">
+    <tr><th>Patient</th><th>Job</th><th>Count</th><th>Unit Cost</th><th>Total</th></tr>
+    {% for patient in item.patients %}
+        <tr>
+            <td><b>{{ patient }}</b></td><td></td><td></td><td></td><td></td>
+        </tr>
+        {% for job, count, unit_cost, cost, string in patient.financials_current_month %}
+            <tr>
+                <td>{{ patient}}</td>
+                <td>{{ job }}</td>
+                <td>{{ count }}</td>
+                <td>{{ unit_cost }}</td>
+                <td>{{ cost }}</td>
+            </tr>
+        {% endfor %}
+    {% endfor %}
+</table>
+<a href="{% url 'create_financial_spreadsheet' item.id %}">Create Spreadsheet</a>
+{% endblock %}

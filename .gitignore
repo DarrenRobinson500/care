@@ -1,0 +1,5 @@
+/SECRET_KEYS.txt
+/app/static/beep.mp3
+/app/migrations
+*.xlsx
+.env
