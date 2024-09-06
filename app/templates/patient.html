@@ -26,14 +26,14 @@
     <div><table>
     {% for info in item.info %}
         {% ifchanged info.category %}
-        </table></div>
-        <div class="col-3">
-        <h5>{{ info.category }}</h5>
+            </table></div>
+            <div class="col-3">
+            <h5>{{ info.category }}</h5>
             <table class="table">
-
         {% endifchanged %}
             <tr>
-            <td>{{ info.field }}</td><td>{{ info.content }}</td><td><a href="{% url 'edit' 'info' info.id %}">edit</a></td>
+            <td>{{ info.field }}</td><td>{{ info.content }}</td>
+            <td><a href="{% url 'edit' 'info' info.id %}">edit</a></td>
             </tr>
     {% endfor %}
     </table></div>
@@ -63,7 +63,7 @@
     {% endfor %}
 </table>
 
-<h3 class="text-primary">Jobs - Completed</h3>
+<h1>Jobs - Completed</h1>
 <table class="table">
     <tr><th>Job Type</th><th>Staff</th><th>Requested</th><th>Completed</th><th>Notes</th><th>Amount</th><th>Actions</th></tr>
     {% for i in item.jobs_complete %}
@@ -90,7 +90,7 @@
 
 <div class="row">
     <div class="col-7">
-        <h3 class="text-primary">Recurring Jobs - Requested</h3>
+        <h1>Recurring Jobs - Requested</h3>
         <table class="table">
             <tr><th>Job Type</th><th>Frequency</th><th>Actions</th></tr>
             {% for i in item.recurring_jobs_requested %}
@@ -111,22 +111,22 @@
         </table>
     </div>
     <div class="col-5">
-        <h3 class="text-primary">Recurring Jobs - Not Requested</h3>
+        <h1>Recurring Jobs - Not Requested</h1>
         <table class="table">
             <tr><th>Job Type</th><th>Actions</th></tr>
             {% for i in item.recurring_jobs_not_requested %}
-                <tr>
-                    <td>{{ i.0 }}</td>
-                <td>
-                    {% if i.1 %}
-                        <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'ind' 'recurringjob' i.1.id %}">View</a>
-                        <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' 'recurringjob' i.1.id %}">Edit</a>
-                        <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'delete' 'recurringjob' i.1.id %}">Delete</a>
-                    {% else %}
-                        <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'add_patient_job' item.id i.0.id %}">Add</a>
-                    {% endif %}
-                </td>
-                </tr>
+                    <tr>
+                        <td>{{ i.0 }}</td>
+                    <td>
+                        {% if i.1 %}
+                            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'ind' 'recurringjob' i.1.id %}">View</a>
+                            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' 'recurringjob' i.1.id %}">Edit</a>
+                            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'delete' 'recurringjob' i.1.id %}">Delete</a>
+                        {% else %}
+                            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'add_patient_job' item.id i.0.id %}">Add</a>
+                        {% endif %}
+                    </td>
+                    </tr>
             {% endfor %}
         </table>
     </div>

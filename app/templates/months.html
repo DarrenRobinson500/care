@@ -12,8 +12,6 @@
             <td>{{ item }}</td>
             <td>
                 <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'ind' model.model_str item.id %}">View</a>
-                <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' model.model_str item.id %}">Edit</a>
-                <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'delete' model.model_str item.id %}">Delete</a>
             </td>
         </tr>
     {% endfor %}

@@ -30,10 +30,27 @@ class Patient(Model):
     photo = ImageField(null=True, blank=True, upload_to="images/")
     def __str__(self): return self.name
     def notes(self): return Note.objects.filter(patient=self)
-    def info(self): return Info.objects.filter(patient=self).order_by('order_field').order_by('order_category')
+    def info(self): return Info.objects.filter(patient=self).order_by('order_field')
     def jobs(self): return Job.objects.filter(patient=self)
     def jobs_open(self): return Job.objects.filter(patient=self, date_time_completed__isnull=True)
     def jobs_complete(self): return Job.objects.filter(patient=self, date_time_completed__isnull=False)
+    def update_links(self):
+        info_fields = InfoField.objects.filter(database="patient")
+        infos = self.info()
+        missing_fields = []
+        for info_field in info_fields:
+            found = False
+            for info in infos:
+                print("Update links:", info.field, info_field, type(info.field), type(info_field))
+                if info.field == info_field.field: found = True
+            if not found:
+                new_info = Info(category=info_field.category, field=info_field.field, order_category=info_field.category.order, order_field=info_field.order,
+                                info_category=info_field.category, info_field=info_field)
+                new_info.patient = self
+                new_info.save()
+            print(info_field, found)
+        print("Update links (missing fields):", info_fields)
+
     def recurring_jobs(self):
         result = []
         jobtypes = JobType.objects.all()
@@ -56,7 +73,7 @@ class Patient(Model):
         jobtypes = JobType.objects.all()
         for jobtype in jobtypes:
             existing = RecurringJob.objects.filter(patient=self, jobtype=jobtype).first()
-            if not existing:
+            if not existing and jobtype.recurring:
                 result.append((jobtype, existing))
         return result
     def financials_current_month(self):
@@ -93,6 +110,8 @@ class Staff(Model):
     user_type = TextField(null=True, blank=True, choices=STAFF_CHOICES)
     mobile = TextField(null=True, blank=True)
     def __str__(self): return self.name
+    def valid_mobile(self):
+        if self.mobile: return len(self.mobile) == 10
     def colour(self):
         # print("Colour:", self.id, colours[self.colour_no])
         return colours[min(self.colour_no, len(colours) - 1)]
@@ -149,8 +168,10 @@ class Day(Model):
         if day_of_week == "Thursday": recurring_jobs = RecurringJob.objects.filter(thursday=True)
         if day_of_week == "Friday": recurring_jobs = RecurringJob.objects.filter(friday=True)
         if day_of_week == "Saturday": recurring_jobs = RecurringJob.objects.filter(saturday=True)
-        job_hours = recurring_jobs.aggregate(total=Sum('duration'))['total'] / 60
-        return job_hours
+        try:
+            return recurring_jobs.aggregate(total=Sum('duration'))['total'] / 60
+        except:
+            return 0
     def working_over_jobs(self):
         working = self.working_hours()
         if not working: working = 0
@@ -349,6 +370,13 @@ class InfoField(Model):
         if self.database == "recurring_job": return RecurringJob
         if self.database == "job": return Job
         if self.database == "month": return Month
+    def infos(self):
+        return Info.objects.filter(info_field=self)
+    def update_infos(self):
+        for info in self.infos():
+            info.order_field = self.order
+            info.save()
+            print("Updating:", self, info, self.order, info.order_field)
 
 class Info(Model):
     model_str = "info"
@@ -374,9 +402,9 @@ class Info(Model):
     month = ForeignKey(Month, blank=True, null=True, related_name="info_month", on_delete=SET_NULL)
     def __str__(self):
         if self.content_text: return self.content_text
-        if self.content_date: return self.content_date
-        if self.content_number: return self.content_number
-        return "Info Error"
+        if self.content_date: return str(self.content_date)
+        if self.content_number: return str(self.content_number)
+        return self.info_field.field
     def date_string(self): return self.date_time_created.strftime(DATE_FORMAT)
     def content(self):
         content_type = self.info_field.data_type
@@ -483,8 +511,8 @@ class File(Model):
         super().delete(*args, **kwargs)
 
 nav_models_staff = [Patient, Staff]
-nav_models_admin = nav_models_staff + [Shift, RecurringJob, Job, Day, Month, SMS]
-nav_models_setup = [AvailableShift, JobType, Frequency, InfoCategory, InfoField, File, Note, Info]
+nav_models_admin = nav_models_staff + [Job, Day, Month, SMS]
+nav_models_setup = [AvailableShift, JobType, Frequency, InfoCategory, InfoField, File, RecurringJob, Shift, Note, Info]
 
 models = nav_models_admin + nav_models_setup
 

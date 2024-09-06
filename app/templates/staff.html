@@ -2,9 +2,82 @@
 {% block content %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
-<h1>{{ item.name }}</h1>
+<h1>
+    {% if item.on_duty %}
+        <i class="fas fa-circle" style="color:#26DF20;"></i>
+    {% else %}
+        <i class="fas fa-circle" style="color:lightgrey;"></i>
+    {% endif %}
 
-{% if item.on_duty %}<h3 style="color: green;">On Duty</h3>{% else %}<h3>Off Duty</h3>{% endif %}
+    {{ item.name }}
+</h1>
+
+
+{% if item == staff %}
+    <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'action' 'increment_colour' 'staff' model.model_str item.id %}">New Colour</a>
+{% endif %}
+
+<h1>Open Jobs</h1>
+<table class="table">
+    <tr><th>Patient</th><th>Job</th><th>Times</th><th>Notes</th><th>Actions</th></tr>
+    {% for i in item.open_jobs %}
+        <tr>
+            <td>
+                {% if i.patient %}
+                    <a href="{% url 'ind' 'patient' i.patient.id %}">{{ i.patient.name }}</a>
+                {% else %}
+                    No patient
+                {% endif %}
+            </td>
+            <td>{{ i.jobtype }}</td>
+            <td>{{ i.times }}</td>
+            <td>{% if i.notes %}{{ i.notes }}{% endif %}</td>
+        <td>
+            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'action' 'complete' 'staff' 'job' i.id %}">Complete</a>
+        </td>
+        </tr>
+    {% endfor %}
+</table>
+
+<h1>Completed Jobs</h1>
+<table class="table">
+    <tr><th>Job Type</th><th>Patient</th><th>Received</th><th>Completed</th><th>Actions</th></tr>
+    {% for i in item.recent_jobs %}
+        <tr>
+            <td>{{ i.jobtype }}</td>
+            <td>
+                {% if i.patient %}
+                    <a href="{% url 'ind' 'patient' i.patient.id %}">{{ i.patient.name }}</a>
+                {% endif %}
+            </td>
+            <td>{{ i.date_time_received }}</td>
+            <td>{{ i.date_time_completed }}</td>
+        <td>
+            <a href="{% url 'action' 'complete' 'staff' 'job' i.id %}">Mark as 'Not Complete'</a>
+            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'action' 'delete' 'staff' 'job' i.id %}">Delete</a>
+        </td>
+        </tr>
+    {% endfor %}
+</table>
+
+<h1>Shifts</h1>
+<table class="table">
+    <tr><th></th>{% for shift in item.available_shifts %}<th>{{ shift }}</th>{% endfor %}</tr>
+    {% for day, day_adj, shifts in item.next_fortnight %}
+    <tr>
+        <td>{{ day }}</td>
+        {% for shift in shifts %}
+            <td>
+                {% if shift.1 %}
+                    <i class="fas fa-circle" style="color:#26DF20;"></i>
+                {% else %}
+                    <a href="{% url 'add_shift' day_adj shift.0 item.id %}"><i class="fas fa-circle" style="color:lightgrey;"></i></a>
+                {% endif %}
+            </td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
 
 <h1>Notes</h1>
 <div class="row">
@@ -41,84 +114,6 @@
     {% endfor %}
     </table></div>
 </div>
-
-{% if item == staff %}
-    <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'action' 'increment_colour' 'staff' model.model_str item.id %}">New Colour</a>
-{% endif %}
-
-<h1>Open Jobs</h1>
-<table class="table">
-    <tr><th>Patient</th><th>Staff</th><th>Times</th><th>Actions</th></tr>
-    {% for i in item.open_jobs %}
-        <tr>
-            <td>{{ i.jobtype }}</td>
-            <td>
-                {% if i.patient %}
-                    <a href="{% url 'ind' 'patient' i.patient.id %}">{{ i.patient.name }}</a>
-                {% endif %}
-            </td>
-            <td>{{ i.times }}</td>
-        <td>
-            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'action' 'complete' 'staff' 'job' i.id %}">Complete</a>
-        </td>
-        </tr>
-    {% endfor %}
-</table>
-
-<h1>Completed Jobs</h1>
-<table class="table">
-    <tr><th>Job Type</th><th>Patient</th><th>Received</th><th>Completed</th><th>Actions</th></tr>
-    {% for i in item.recent_jobs %}
-        <tr>
-            <td>{{ i.jobtype }}</td>
-            <td>
-                {% if i.patient %}
-                    <a href="{% url 'ind' 'patient' i.patient.id %}">{{ i.patient.name }}</a>
-                {% endif %}
-            </td>
-            <td>{{ i.date_time_received }}</td>
-            <td>{{ i.date_time_completed }}</td>
-        <td>
-            <a href="{% url 'action' 'complete' 'staff' 'job' i.id %}">Mark as 'Not Complete'</a>
-        </td>
-        </tr>
-    {% endfor %}
-</table>
-
-<h1>Shifts</h1>
-<table class="table">
-    <tr><th></th>{% for shift in item.available_shifts %}<th>{{ shift }}</th>{% endfor %}</tr>
-    {% for day, day_adj, shifts in item.next_fortnight %}
-    <tr>
-        <td>{{ day }}</td>
-        {% for shift in shifts %}
-            <td>
-                {% if shift.1 %}
-                    <i class="fas fa-circle" style="color:green;"></i>
-                {% else %}
-                    <a href="{% url 'add_shift' day_adj shift.0 item.id %}"><i class="fas fa-circle" style="color:lightgrey;"></i></a>
-                {% endif %}
-            </td>
-        {% endfor %}
-    </tr>
-    {% endfor %}
-</table>
-
-<h1>Shifts</h1>
-<table class="table">
-    <tr><th>Date</th><th>Shift</th><th>Actions</th></tr>
-    {% for i in item.shifts %}
-        <tr>
-            <td>{{ i.date }}</td>
-            <td>{{ i.shift }}</td>
-        <td>
-            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'ind' 'shift' i.id %}">View</a>
-            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' 'shift' i.id %}">Edit</a>
-            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'delete' 'shift' i.id %}">Delete</a>
-        </td>
-        </tr>
-    {% endfor %}
-</table>
 
 
 

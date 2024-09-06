@@ -7,7 +7,7 @@ from datetime import *
 
 def home(request):
     if not request.user.is_authenticated:
-        return redirect("login")
+        return redirect("custom_login")
 
     staff, model, form, nav_models, colour = get_info(request, None)
     if staff.user_type == "Staff": return redirect('ind', 'staff', staff.id)
@@ -45,14 +45,19 @@ def home(request):
         "Upload Information fields",
         "Pictures",
         "Multi colour",
+        "Environment variables",
+        "Git",
     ]
 
     to_do = [
-        "Environment variables",
-        "Git",
+        "Patient -> job -> edit -> jobs (should be patient)",
+        "Patient -> Recurring Jobs not requested -> Shows calls (but shouldn't)",
+        "Automate the addition of recurring jobs to the jobs list",
+        "Validate",
         "Amazon",
         "Checking input files",
         "Testing",
+        "User Perspectives x5"
     ]
 
     context = {"to_do": to_do, 'complete': complete, 'system_description': system_description, 'nav_models': nav_models, 'staff': staff, 'colour': colour}
@@ -72,7 +77,7 @@ def signup(request):
             user.first_name = firstname
             user.last_name = lastname
             user.save()
-            Staff(name=firstname+" "+lastname, user=user, user_type="Staff").save()
+            Staff(name=firstname+" "+lastname, user=user, user_type="Staff", colour_no=0).save()
             login(request, user)
             return redirect("home")
     else:
@@ -84,7 +89,7 @@ def switch_user(request, user_type):
     if user_type == "setup": username = "local"
     if user_type == "admin": username = "Matt"
     if user_type == "staff": username = "Allison"
-    password = "FoxyRoxy1997"
+    password = os.environ.get("user_password")
     user = authenticate(request, username=username, password=password)
     if user is not None:
         login(request, user)
@@ -130,7 +135,7 @@ def get_info(request, model_str, id=None):
     # print("Get info model:", model, current_model == Info)
     if current_model == Info and id:
         item = model.objects.get(id=id)
-        # print("Get info item:", item)
+        print("Get info item:", item, item.info_field.data_type)
         if item.info_field.data_type == "text": current_form = InfoTextForm
         if item.info_field.data_type == "date": current_form = InfoDateForm
         if item.info_field.data_type == "number": current_form = InfoNumberForm
@@ -235,13 +240,10 @@ def list(request, model_str):
     return render(request, f"{model_str}s.html", context)
 
 def ind(request, model_str, id):
-    staff = Staff.objects.get(id=3)
-    # print("Ind Colour 1:", staff.id, staff.colour_no, colours[staff.colour_no])
-
     staff, model, form, nav_models, colour = get_info(request, model_str)
-    # print("Ind Colour:", staff.id, colours[staff.colour_no])
     model = get_model(model_str)
     item = model.objects.get(id=id)
+    if model == Patient: item.update_links()
     context = {'item': item, 'model': model, 'nav_models': nav_models, 'colour': colour, 'staff': staff}
     return render(request, f"{model_str}.html", context)
 
@@ -263,7 +265,8 @@ def new(request, model_str):
     return render(request, f"form.html", context)
 
 def edit(request, model_str, id):
-    staff, model, form, nav_models, colour = get_info(request, model_str)
+    staff, model, form, nav_models, colour = get_info(request, model_str, id)
+    print("Edit", form, model_str)
     item = model.objects.get(id=id)
     if request.method == 'POST':
         form = form(request.POST, request.FILES, instance=item)
@@ -283,11 +286,7 @@ def edit(request, model_str, id):
 def delete(request, model_str, id):
     staff, model, form, nav_models, colour = get_info(request, model_str)
     item = model.objects.get(id=id)
-    if model_str == "answer":
-        item.answer = None
-        item.save()
-    else:
-        item.delete()
+    item.delete()
     return redirect('list', model_str)
 
 def order(request, model_str, dir, id):
@@ -301,13 +300,18 @@ def order(request, model_str, dir, id):
             if i.order and i.order > max_order: max_order = i.order
         item.order = max_order + 1
         item.save()
+        if model == InfoField: item.update_infos()
     else:
         swap_item = model.objects.filter(order=item.order+dir).first()
         item.order = item.order + dir
         item.save()
+        if model == InfoField:
+            print("Updating infos")
+            item.update_infos()
         if swap_item:
             swap_item.order = item.order - dir
             swap_item.save()
+            if model == InfoField: swap_item.update_infos()
 
     return redirect('list', model_str)
 
@@ -342,6 +346,11 @@ def add_note(request, model_str, id):
 def action(request, action_type, return_to, model_str, id):
     staff, model, form, nav_models, colour = get_info(request, model_str)
     item = model.objects.get(id=id)
+    item_staff = None
+    if action_type == "delete":
+        print("Item to delete:", item)
+        item_staff = item.staff
+        item.delete()
     if action_type == "complete":
         if not item.date_time_completed:
             item.date_time_completed = datetime.now()
@@ -349,16 +358,16 @@ def action(request, action_type, return_to, model_str, id):
         else:
             item.date_time_completed = None
             item.amount = None
+        item.save()
     if action_type == "increment_colour":
         item.colour_no += 1
         if item.colour_no >= len(colours): item.colour_no = 0
         item.save()
 
-    item.save()
-    # print("Action Colour:", staff.id, staff.colour_no, colours[staff.colour_no])
     if return_to == "staff":
+        if item_staff:
+            return redirect('ind', 'staff', item_staff.id)
         if item == staff:
-            # print("Action Colour 2:", staff.id, staff.colour_no, colours[staff.colour_no])
             return redirect('ind', 'staff', item.id)
         if item.staff:
             return redirect('ind', 'staff', item.staff.id)
@@ -399,7 +408,9 @@ def add_patient_job(request, patient_id, jobtype_id):
     patient = Patient.objects.get(id=patient_id)
     jobtype = JobType.objects.get(id=jobtype_id)
     frequency = Frequency.objects.get(name="Every day")
-    RecurringJob(patient=patient, jobtype=jobtype, frequency=frequency).save()
+    new_item = RecurringJob(patient=patient, jobtype=jobtype, frequency=frequency)
+    # new_item.save()
+    new_item.save_initial()
     return redirect('ind', 'patient', patient_id)
 
 def allocate_job(request, job_id, staff_id):

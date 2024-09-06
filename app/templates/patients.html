@@ -6,14 +6,14 @@
 <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'new' model.model_str %}">New {{ model.single }}</a>
 
 <table class="table">
-    <tr><th>Order</th><th>Name</th><th>Jobs</th><th>Actions</th></tr>
+    <tr><th>Order</th><th>Name</th><th>Recurring Jobs</th><th>Actions</th></tr>
     {% for item in items %}
         <tr>
             <td>
                 <a href="{% url 'order' model.model_str -1 item.id %}"><i class="fas fa-sort-up"></i></a>
                 {{ item.order }}
                 <a href="{% url 'order' model.model_str 1 item.id %}"><i class="fas fa-sort-down"></i></a>
-            <td>
+            </td>
             <td>
                 <a href="{% url 'ind' model.model_str item.id %}">{{ item.name }}</a><br>
                 [{% if not item.active %}Not {% endif %} Active]

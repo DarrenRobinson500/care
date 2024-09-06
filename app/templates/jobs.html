@@ -8,11 +8,15 @@
 
 <h1>Unallocated Jobs</h1>
 <table class="table">
-    <tr><th>Job Type</th><th>Patient</th><th>Available Staff</th><th>Times</th><th>Requested</th><th>Completed</th><th>Notes</th><th>Actions</th></tr>
+    <tr><th>Job Type</th><th>Patient</th><th>Available Staff</th><th>Times</th><th>Requested</th><th>Notes</th><th>Actions</th></tr>
     {% for item in items_unallocated %}
         <tr>
             <td>{{ item.jobtype }}</td>
-            <td><a href="{% url 'ind' 'patient' item.patient.id %}">{{ item.patient.name }}</a></td>
+            {% if item.patient %}
+                <td><a href="{% url 'ind' 'patient' item.patient.id %}">{{ item.patient.name }}</a></td>
+            {% else %}
+                <td>No patient</td>
+            {% endif %}
             <td>
                 {% if item.staff %}
                     <a href="{% url 'ind' 'staff' item.staff.id %}">{{ item.staff.name }}</a>
@@ -26,8 +30,7 @@
             </td>
             <td>{{ item.times }}</td>
             <td>{{ item.date_time_requested }}</td>
-            <td>{{ item.date_time_completed }}</td>
-            <td>{{ item.notes }}</td>
+            <td>{% if item.notes %}{{ item.notes }}{% endif %}</td>
         <td>
             <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' model.model_str item.id %}">Edit</a>
             <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'delete' model.model_str item.id %}">Delete</a>
@@ -38,19 +41,26 @@
 
 <h1>Open Allocated Jobs</h1>
 <table class="table">
-    <tr><th>Job Type</th><th>Patient</th><th>Staff</th><th>Times</th><th>Requested</th><th>Completed</th><th>Notes</th><th>Actions</th></tr>
+    <tr><th>Job Type</th><th>Patient</th><th>Staff</th><th>Times</th><th>Requested</th><th>Notes</th><th>Actions</th></tr>
     {% for item in items_open %}
         <tr>
             <td>{{ item.jobtype }}</td>
-            <td><a href="{% url 'ind' 'patient' item.patient.id %}">{{ item.patient.name }}</a></td>
+            {% if item.patient %}
+                <td><a href="{% url 'ind' 'patient' item.patient.id %}">{{ item.patient.name }}</a></td>
+            {% else %}
+                <td>No patient</td>
+            {% endif %}
             <td>
-                <a class="btn btn-care btn-sm" style="background-color: {{ colour }};" href="{% url 'sms_job' model.model_str item.id %}">SMS</a>
+                {% if item.staff.valid_mobile %}
+                    <a class="btn btn-care btn-sm" style="background-color: {{ colour }};" href="{% url 'sms_job' model.model_str item.id %}">SMS</a>
+                {% else %}
+                    <a class="btn btn-care btn-sm" style="background-color: lightgrey;" href="">SMS</a>
+                {% endif %}
                 <a href="{% url 'ind' 'staff' item.staff.id %}">{{ item.staff.name }}</a>
             </td>
             <td>{{ item.times }}</td>
             <td>{{ item.date_time_requested }}</td>
-            <td>{{ item.date_time_completed }}</td>
-            <td>{{ item.notes }}</td>
+            <td>{% if item.notes %}{{ item.notes }}{% endif %}</td>
         <td>
             <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' model.model_str item.id %}">Edit</a>
             <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'delete' model.model_str item.id %}">Delete</a>
@@ -70,7 +80,10 @@
                     <td>{{ item.jobtype }}</td>
                         {% if item.patient %}
                             <td><a href="{% url 'ind' 'patient' item.patient.id %}">{{ item.patient.name }}</a></td>
+                        {% else %}
+                            <td>No patient</td>
                         {% endif %}
+
                     <td>{{ item.frequency }}</td>
                 <td>
                     <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'ind' 'recurringjob' item.id %}">View</a>

@@ -6,12 +6,17 @@
 <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'new' model.model_str %}">New {{ model.single }}</a>
 
 <table class="table">
-    <tr><th>Job Type</th><th>Patient</th><th>Frequency</th><th>Actions</th></tr>
+    <tr><th>Job Type</th><th>Patient</th><th>Frequency</th><th>Duration</th><th>Actions</th></tr>
     {% for item in items %}
         <tr>
             <td>{{ item.jobtype }}</td>
-            <td><a href="{% url 'ind' 'patient' item.patient.id %}">{{ item.patient.name }}</a></td>
+            <td>
+                {% if item.patient %}
+                    <a href="{% url 'ind' 'patient' item.patient.id %}">{{ item.patient.name }}</a>
+                {% endif %}
+            </td>
             <td>{{ item.frequency }}</td>
+            <td>{{ item.duration }}</td>
         <td>
             <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'active' model.model_str item.id %}">Active</a>
             <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'ind' model.model_str item.id %}">View</a>
