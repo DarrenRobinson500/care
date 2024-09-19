@@ -6,8 +6,8 @@
 <a href="{% url 'create_financial_spreadsheet' item.id %}">Create Spreadsheet</a>
 
 <table class="table">
-    <tr><th>Patient</th><th>Job</th><th>Count</th><th>Unit Cost</th><th>Total</th></tr>
-    {% for patient, data in item.patient_data %}
+    <tr><th>Field</th><th>Data</th><th>Count</th><th>Unit Cost</th><th>Total</th></tr>
+    {% for i item.item_data %}
         <tr>
             <td><a href="{% url 'ind' 'patient' patient.id %}">{{ patient }}</a></td><td></td><td></td><td></td><td></td>
         </tr>

@@ -2,27 +2,18 @@
 {% block content %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
-<h1>Home</h1>
-System Description:
-<ol>
-{% for item in system_description %}
-    <li>{{ item }}</li>
-{% endfor %}
-</ol>
+<h1>System Overview</h1>
+    {% for model, button_colour in links %}
+        <a class="btn btn-care" style="border: 2px solid black; background-color: {{ button_colour }};" href="{% url 'list' model.model_str %}">{{ model.plural }}</a>
+    {% endfor %}<br><br>
+<img src="/static/overview.svg" class="svg-image" style="width: 60%">
 
-To Do:
-<ol>
-{% for item in to_do %}
-    <li>{{ item }}</li>
-{% endfor %}
-</ol>
-
-Complete:
-<ol>
-{% for item in complete %}
-    <li><s>{{ item }}</s></li>
-{% endfor %}
-</ol>
+<h1>Next Steps</h1>
+    <ol>
+    {% for item in to_do %}
+        <li>{{ item }}</li>
+    {% endfor %}
+    </ol>
 
 
 {% endblock %}

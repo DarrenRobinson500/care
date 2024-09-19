@@ -8,13 +8,13 @@ class PatientForm(ModelForm):
         widgets = {
             'name': TextInput(attrs={'class':'form-control'}),
             'active': CheckboxInput(attrs={'class': 'form-check-input'}),
-
+            "photo": FileInput(attrs={"class": "form-control"}),
         }
 
 class StaffForm(ModelForm):
     class Meta:
         model = Staff
-        fields = ['name', 'manager', 'active', 'user', 'user_type', 'colour_no']
+        fields = ['name', 'manager', 'active', 'user', 'user_type', 'colour_no', 'photo']
         widgets = {
             'name': TextInput(attrs={'class':'form-control'}),
             'colour_no': TextInput(attrs={'class':'form-control'}),
@@ -22,6 +22,7 @@ class StaffForm(ModelForm):
             'user': Select(attrs={'class':'form-control'}),
             'user_type': Select(attrs={'class':'form-control'}),
             'active': CheckboxInput(attrs={'class': 'form-check-input'}),
+            "photo": FileInput(attrs={"class": "form-control"}),
         }
 
 class AvailableShiftForm(ModelForm):
@@ -48,7 +49,7 @@ class ShiftForm(ModelForm):
 class JobTypeForm(ModelForm):
     class Meta:
         model = JobType
-        fields = ['name', 'recurring', 'start', 'end', 'amount', 'duration']
+        fields = ['name', 'recurring', 'medication', 'start', 'end', 'amount', 'duration']
         labels = {
             'amount': "Standard Cost",
             'duration': "Duration (minutes)",
@@ -60,6 +61,7 @@ class JobTypeForm(ModelForm):
             'amount': NumberInput(attrs={'class': 'form-control'}),
             'duration': NumberInput(attrs={'class': 'form-control'}),
             'recurring': CheckboxInput(attrs={'class': 'form-check-input'}),
+            'medication': CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
 class RecurringJobForm(ModelForm):
@@ -84,10 +86,29 @@ class JobForm(ModelForm):
             'notes': Textarea(attrs={'class': 'form-control'}),
         }
 
+class MedicationTypeForm(ModelForm):
+    class Meta:
+        model = MedicationType
+        fields = ("name", "category")
+        widgets = {
+            "name": TextInput(attrs={"class": "form-control"}),
+            "category": TextInput(attrs={"class": "form-control"}),
+        }
+
+class MedicationForm(ModelForm):
+    class Meta:
+        model = Medication
+        fields = ("medication_type", "dosage", "frequency", )
+        widgets = {
+            "medication_type": Select(attrs={"class": "form-control"}),
+            "dosage": TextInput(attrs={"class": "form-control"}),
+            "frequency": Select(attrs={"class": "form-control"}),
+        }
+
 class FrequencyForm(ModelForm):
     class Meta:
         model = Frequency
-        fields = ['name', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+        fields = ['name', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'per_day']
         widgets = {
             'name': TextInput(attrs={'class':'form-control'}),
             'sunday': CheckboxInput(attrs={'class': 'form-check-input'}),
@@ -97,6 +118,7 @@ class FrequencyForm(ModelForm):
             'thursday': CheckboxInput(attrs={'class': 'form-check-input'}),
             'friday': CheckboxInput(attrs={'class': 'form-check-input'}),
             'saturday': CheckboxInput(attrs={'class': 'form-check-input'}),
+            'per_day': NumberInput(attrs={'class': 'form-control'}),
         }
 
 class InfoCategoryForm(ModelForm):
@@ -126,6 +148,15 @@ class InfoTextForm(ModelForm):
         labels = {'content_text': ""}
         widgets = {
             'content_text': TextInput(attrs={'class': 'form-control'}),
+        }
+
+class InfoTextAreaForm(ModelForm):
+    class Meta:
+        model = Info
+        fields = ["content_text"]
+        labels = {'content_text': ""}
+        widgets = {
+            'content_text': Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
 
 class InfoDateForm(ModelForm):
@@ -166,4 +197,4 @@ class FileForm(ModelForm):
         }
 
 
-forms = [PatientForm, StaffForm, AvailableShiftForm, ShiftForm, JobTypeForm, RecurringJobForm, JobForm, FrequencyForm, NoteForm, InfoCategoryForm, InfoFieldForm]
+forms = [PatientForm, StaffForm, AvailableShiftForm, ShiftForm, MedicationTypeForm, MedicationForm, JobTypeForm, RecurringJobForm, JobForm, FrequencyForm, NoteForm, InfoCategoryForm, InfoFieldForm]

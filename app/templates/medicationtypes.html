@@ -1,0 +1,28 @@
+{% extends 'base.html'%}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+<div class="row">
+    <div class="col-2"></div>
+    <div class="col-8">
+        <h1>{{ model.plural }}</h1>
+        <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'new' model.model_str %}">New {{ model.single }}</a>
+        <br>
+
+        <table class="table">
+            <tr><th>{{ model.single }}</th><th>Category</th><th>Action</th></tr>
+            {% for item in items %}
+                <tr>
+                    <td>{{ item }}</td>
+                    <td>{{ item.category }}</td>
+                    <td>
+                        <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'ind' model.model_str item.id %}">View</a>
+                        <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' model.model_str item.id %}">Edit</a>
+                        <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'delete' model.model_str item.id %}">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}

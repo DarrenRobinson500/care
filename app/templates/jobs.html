@@ -11,7 +11,7 @@
     <tr><th>Job Type</th><th>Patient</th><th>Available Staff</th><th>Times</th><th>Requested</th><th>Notes</th><th>Actions</th></tr>
     {% for item in items_unallocated %}
         <tr>
-            <td>{{ item.jobtype }}</td>
+            <td><a href="{% url 'ind' 'job' item.id %}">{{ item.jobtype.name }}</a></td>
             {% if item.patient %}
                 <td><a href="{% url 'ind' 'patient' item.patient.id %}">{{ item.patient.name }}</a></td>
             {% else %}
@@ -21,9 +21,9 @@
                 {% if item.staff %}
                     <a href="{% url 'ind' 'staff' item.staff.id %}">{{ item.staff.name }}</a>
                 {% else %}
-                    {% for shift in item.available_shifts %}
-                        {% if shift.staff %}
-                            <a href="{% url 'allocate_job' item.id shift.staff.id %}">{{ shift.staff }}</a><br>
+                    {% for avail_staff in item.available_staff %}
+                        {% if avail_staff %}
+                            <a class="btn btn-care btn-sm" style="background-color: {{ colour }};" href="{% url 'allocate_job' item.id avail_staff.id %}">Allocate to: {{ avail_staff }}</a><br>
                         {% endif %}
                     {% endfor %}
                 {% endif %}
@@ -44,7 +44,7 @@
     <tr><th>Job Type</th><th>Patient</th><th>Staff</th><th>Times</th><th>Requested</th><th>Notes</th><th>Actions</th></tr>
     {% for item in items_open %}
         <tr>
-            <td>{{ item.jobtype }}</td>
+            <td><a href="{% url 'ind' 'job' item.id %}">{{ item.jobtype.name }}</a></td>
             {% if item.patient %}
                 <td><a href="{% url 'ind' 'patient' item.patient.id %}">{{ item.patient.name }}</a></td>
             {% else %}
@@ -72,7 +72,7 @@
 {% for day_adj, string, days_jobs in upcoming_jobs %}
     {% if days_jobs %}
         <H1>{{ string }}'s Recurring Jobs (not yet added)</H1>
-        <a class="btn btn-care" href="{% url 'add_upcoming_jobs' day_adj %}">Create jobs</a>
+        <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'add_upcoming_jobs' day_adj %}">Create jobs</a>
         <table class="table">
             <tr><th>Job Type</th><th>Patient</th><th>Frequency</th><th>Actions</th></tr>
             {% for item in days_jobs %}

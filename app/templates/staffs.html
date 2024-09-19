@@ -17,11 +17,16 @@
                 {% if item.on_duty %}
                     <i class="fas fa-circle" style="color:#26DF20;"></i>
                 {% else %}
-                    <i class="fas fa-circle" style="color:lightgrey;"></i></a>
+                    <i class="fas fa-circle" style="color:lightgrey;"></i>
                 {% endif %}
                 <a href="{% url 'ind' model.model_str item.id %}">{{ item.name }}</a><br>
             </td>
             <td>
+                {% if item.user %}
+                    <i class="fas fa-circle" style="color:#26DF20;"></i>
+                {% else %}
+                    <i class="fas fa-circle" style="color:lightgrey;"></i></a>
+                {% endif %}
                 {{ item.user_type }}
             </td>
         <td>

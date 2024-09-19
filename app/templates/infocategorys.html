@@ -13,7 +13,7 @@
                 <a href="{% url 'order' model.model_str -1 item.id %}"><i class="fas fa-sort-up"></i></a>
                 {{ item.order }}
                 <a href="{% url 'order' model.model_str 1 item.id %}"><i class="fas fa-sort-down"></i></a>
-            <td>
+            </td>
             <td>{{ item.category }}</td>
             <td>
                 <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'active' model.model_str item.id %}">Active</a>

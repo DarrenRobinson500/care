@@ -2,8 +2,9 @@
 {% block content %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
-<h1>{{ item.name }}</h1>
-
+<h1>{{ item.name }}
+<a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' model.model_str item.id 'patient' %}">Edit</a>
+</h1>
 {% if item.photo %}
 <img src="{{ item.photo.url }}" height="150">
 {% endif %}
@@ -22,6 +23,8 @@
 <a href="{% url 'add_note' model.model_str item.id %}">Add Note</a>
 
 <h1>Information</h1>
+<a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'ind_info' model.model_str item.id %}">Edit Information </a>
+<br><br>
 <div class="row">
     <div><table>
     {% for info in item.info %}
@@ -32,31 +35,50 @@
             <table class="table">
         {% endifchanged %}
             <tr>
-            <td>{{ info.field }}</td><td>{{ info.content }}</td>
-            <td><a href="{% url 'edit' 'info' info.id %}">edit</a></td>
+            <td>
+                {{ info.field }}
+            </td>
+            <td>{{ info.content }}</td>
             </tr>
     {% endfor %}
     </table></div>
 </div>
 
+<h1>Medication</h1>
+<a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'new' 'medication' item.id 'patient' %}">New Medication</a>
+{% if item.medications %}
+    <table class="table">
+    <tr><th>Medication</th><th>Dosage</th><th>Frequency</th><th>Actions</th></tr>
+        {% for i in item.medications %}
+            <tr>
+                <td>{{ i.medication_type }}</td>
+                <td>{{ i.dosage }}</td>
+                <td>{{ i.frequency }}</td>
+                <td>
+                    <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' 'medication' i.id model.model_str %}">Edit</a>
+                    <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'delete' 'medication' i.id %}">Delete</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
 <h1>Jobs - Open</h1>
 <table class="table">
-    <tr><th>Job Type</th><th>Staff</th><th>Requested</th><th>Completed</th><th>Notes</th><th>Amount</th><th>Actions</th></tr>
+    <tr><th>Job Type</th><th>Staff</th><th>Requested</th><th>Notes</th><th>Amount</th><th>Actions</th></tr>
     {% for i in item.jobs_open %}
         <tr>
-            <td>{{ i.jobtype }}</td>
+            <td><a href="{% url 'ind' 'job' i.id %}">{{ i.jobtype }}</a></td>
             <td>
                 {% if i.staff %}
                     <a href="{% url 'ind' 'staff' i.staff.id %}">{{ i.staff.name }}</a>
                 {% endif %}
             </td>
             <td>{{ i.date_time_requested }}</td>
-            <td>{{ i.date_time_completed }}</td>
-            <td>{{ i.notes }}</td>
+            <td>{% if i.notes %}{{ i.notes }}{% endif %}</td>
             <td>{{ i.amount }}</td>
         <td>
-            <a class="btn btn-care" style="background-color: {{ colour }};" style="background-color: {{ colour }};" href="{% url 'ind' 'job' i.id %}">View</a>
-            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' 'job' i.id %}">Edit</a>
+            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' 'job' i.id model.model_str %}">Edit</a>
             <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'delete' 'job' i.id %}">Delete</a>
         </td>
         </tr>
@@ -68,7 +90,7 @@
     <tr><th>Job Type</th><th>Staff</th><th>Requested</th><th>Completed</th><th>Notes</th><th>Amount</th><th>Actions</th></tr>
     {% for i in item.jobs_complete %}
         <tr>
-            <td>{{ i.jobtype }}</td>
+            <td><a href="{% url 'ind' 'job' i.id %}">{{ i.jobtype }}</a></td>
             <td>
                 {% if i.staff %}
                     <a href="{% url 'ind' 'staff' i.staff.id %}">{{ i.staff.name }}</a>
@@ -76,11 +98,11 @@
             </td>
             <td>{{ i.date_time_requested }}</td>
             <td>{{ i.date_time_completed }}</td>
-            <td>{{ i.notes }}</td>
+            <td>{% if i.notes %}{{ i.notes }}{% endif %}</td>
             <td>{{ i.amount }}</td>
         <td>
             <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'ind' 'job' i.id %}">View</a>
-            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' 'job' i.id %}">Edit</a>
+            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' 'job' i.id model.model_str %}">Edit</a>
             <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'delete' 'job' i.id %}">Delete</a>
         </td>
         </tr>
@@ -90,7 +112,7 @@
 
 <div class="row">
     <div class="col-7">
-        <h1>Recurring Jobs - Requested</h3>
+        <h1>Regular Jobs - Requested</h3>
         <table class="table">
             <tr><th>Job Type</th><th>Frequency</th><th>Actions</th></tr>
             {% for i in item.recurring_jobs_requested %}
@@ -100,7 +122,7 @@
                 <td>
                     {% if i.1 %}
                         <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'ind' 'recurringjob' i.1.id %}">View</a>
-                        <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' 'recurringjob' i.1.id %}">Edit</a>
+                        <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' 'recurringjob' i.1.id model.model_str %}">Edit</a>
                         <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'delete' 'recurringjob' i.1.id %}">Delete</a>
                     {% else %}
                         <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'add_patient_job' item.id i.0.id %}">Add</a>
@@ -111,7 +133,7 @@
         </table>
     </div>
     <div class="col-5">
-        <h1>Recurring Jobs - Not Requested</h1>
+        <h1>Regular Jobs - Not Requested</h1>
         <table class="table">
             <tr><th>Job Type</th><th>Actions</th></tr>
             {% for i in item.recurring_jobs_not_requested %}
@@ -120,7 +142,7 @@
                     <td>
                         {% if i.1 %}
                             <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'ind' 'recurringjob' i.1.id %}">View</a>
-                            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' 'recurringjob' i.1.id %}">Edit</a>
+                            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' 'recurringjob' i.1.id model.model_str %}">Edit</a>
                             <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'delete' 'recurringjob' i.1.id %}">Delete</a>
                         {% else %}
                             <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'add_patient_job' item.id i.0.id %}">Add</a>

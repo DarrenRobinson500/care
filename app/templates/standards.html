@@ -6,15 +6,18 @@
     <div class="col-3"></div>
     <div class="col-6">
         <h1>{{ model.plural }}</h1>
+        <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'new' model.model_str %}">New {{ model.single }}</a>
+        <br>
 
         <table class="table">
-            <tr><th>Month</th><th>Action</th></tr>
+            <tr><th>{{ model.single }}</th><th>Action</th></tr>
             {% for item in items %}
                 <tr>
                     <td>{{ item }}</td>
                     <td>
                         <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'ind' model.model_str item.id %}">View</a>
-                        <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'create_financial_spreadsheet' item.id %}">Create Spreadsheet</a>
+                        <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' model.model_str item.id %}">Edit</a>
+                        <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'delete' model.model_str item.id %}">Delete</a>
                     </td>
                 </tr>
             {% endfor %}

@@ -1,6 +1,7 @@
 {% extends 'base.html'%}
 {% block content %}
 <h1>The following data has been loaded into the Database</h1>
+<a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'list' item.type %}">List: {{ item.type | capfirst }}</a>
 
 <h3>Spreadsheet</h3>
 {{ spreadsheet | safe }}

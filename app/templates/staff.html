@@ -12,10 +12,33 @@
     {{ item.name }}
 </h1>
 
+{% if item.photo %}
+<img src="{{ item.photo.url }}" height="150">
+{% endif %}
+
 
 {% if item == staff %}
     <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'action' 'increment_colour' 'staff' model.model_str item.id %}">New Colour</a>
 {% endif %}
+
+<h1>Preferred Shifts</h1>
+<table class="table">
+<tr><th></th><th>Sunday</th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th><th>Saturday</th></tr>
+    {% for preferred_shift in item.preferred_shifts %}
+        <tr>
+            <td>{{ preferred_shift.available_shift }}</td>
+            {% for day, preference in preferred_shift.preference_by_day %}
+                <td>
+                    {% if preference %}
+                        <a href="{% url 'add_preferred_shift' day preferred_shift.available_shift.id item.id %}"><i class="fas fa-circle" style="color:#26DF20;"></i></a>
+                    {% else %}
+                        <a href="{% url 'add_preferred_shift' day preferred_shift.available_shift.id item.id %}"><i class="fas fa-circle" style="color:lightgrey;"></i></a>
+                    {% endif %}
+                </td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+</table>
 
 <h1>Open Jobs</h1>
 <table class="table">
@@ -33,6 +56,7 @@
             <td>{{ i.times }}</td>
             <td>{% if i.notes %}{{ i.notes }}{% endif %}</td>
         <td>
+            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' 'job' i.id model.model_str %}">Edit</a>
             <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'action' 'complete' 'staff' 'job' i.id %}">Complete</a>
         </td>
         </tr>
@@ -41,7 +65,7 @@
 
 <h1>Completed Jobs</h1>
 <table class="table">
-    <tr><th>Job Type</th><th>Patient</th><th>Received</th><th>Completed</th><th>Actions</th></tr>
+    <tr><th>Job Type</th><th>Patient</th><th>Received</th><th>Completed</th><th>Notes</th><th>Actions</th></tr>
     {% for i in item.recent_jobs %}
         <tr>
             <td>{{ i.jobtype }}</td>
@@ -52,8 +76,10 @@
             </td>
             <td>{{ i.date_time_received }}</td>
             <td>{{ i.date_time_completed }}</td>
+            <td>{% if i.notes %}{{ i.notes }}{% endif %}</td>
         <td>
-            <a href="{% url 'action' 'complete' 'staff' 'job' i.id %}">Mark as 'Not Complete'</a>
+            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' 'job' i.id model.model_str %}">Edit</a>
+            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'action' 'complete' 'staff' 'job' i.id %}">Mark 'Not Complete'</a>
             <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'action' 'delete' 'staff' 'job' i.id %}">Delete</a>
         </td>
         </tr>

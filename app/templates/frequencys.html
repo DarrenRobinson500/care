@@ -5,17 +5,16 @@
 <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'new' model.model_str %}">New {{ model.single }}</a>
 
 <table class="table">
-    <tr><th>Order</th><th>Name</th><th>Frequency</th><th>Sunday</th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th><th>Saturday</th><th>Actions</th></tr>
+    <tr><th>Order</th><th>Name</th><th>Sunday</th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th><th>Saturday</th><th>Per day</th><th>Actions</th></tr>
     {% for item in items %}
         <tr>
             <td>
                 <a href="{% url 'order' model.model_str -1 item.id %}"><i class="fas fa-sort-up"></i></a>
                 {{ item.order }}
                 <a href="{% url 'order' model.model_str 1 item.id %}"><i class="fas fa-sort-down"></i></a>
-            <td>
+            </td>
             <td>
                 <a href="{% url 'ind' model.model_str item.id %}">{{ item.name }}</a><br>
-                [{% if not item.active %}Not {% endif %} Active]
             </td>
             <td>{% if item.sunday %}&#x2713;{% endif %}</td>
             <td>{% if item.monday %}&#x2713;{% endif %}</td>
@@ -24,9 +23,8 @@
             <td>{% if item.thursday %}&#x2713;{% endif %}</td>
             <td>{% if item.friday %}&#x2713;{% endif %}</td>
             <td>{% if item.saturday %}&#x2713;{% endif %}</td>
+            <td>{{ item.per_day }}x</td>
         <td>
-            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'active' model.model_str item.id %}">Active</a>
-            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'ind' model.model_str item.id %}">View</a>
             <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' model.model_str item.id %}">Edit</a>
             <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'delete' model.model_str item.id %}">Delete</a>
         </td>

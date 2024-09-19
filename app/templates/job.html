@@ -2,6 +2,85 @@
 {% block content %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
-<h1>{{ item.name }}</h1>
+<h1>{{ item }}</h1>
+<a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'list' model.model_str %}">List: {{ model.plural }}</a>
+<div class="row">
+    <div class="col-6">
+        <table class="table">
+            <tr><th>Field</th><th>Data</th><th>Action</th><td></td></tr>
+            <tr><td>Job Type</td><td>{{ item.jobtype }}</td><td></td></tr>
+            <tr><td>Patient</td>
+                <td>
+                    {% if item.patient %}
+                        <a href="{% url 'ind' 'patient' item.patient.id %}">{{ item.patient.name }}</a>
+                    {% else %}
+                        No patient
+                    {% endif %}
+                </td>
+                <td></td>
+            </tr>
+            <tr><td>Staff</td><td><a href="{% url 'ind' 'staff' item.staff.id %}">{{ item.staff.name }}</a></td>
+                <td>
+                    {% if item.staff.valid_mobile %}
+                        <a class="btn btn-care btn-sm" style="background-color: {{ colour }};" href="{% url 'sms_job' model.model_str item.id %}">SMS</a>
+                    {% else %}
+                        <a class="btn btn-care btn-sm" style="background-color: lightgrey;" href="">SMS</a>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr><td>Time Requested</td><td>{{ item.date_time_requested }}</td><td></td></tr>
+
+            <tr>
+                <td>Time Completed</td>
+                {% if item.date_time_completed %}
+                    <td>{{ item.date_time_completed }}</td>
+                    <td><a class="btn btn-care btn-sm" style="background-color: {{ colour }};" href="{% url 'action' 'complete' 'job' model.model_str item.id %}">Mark 'Not Complete'</a></td>
+                {% else %}
+                    <td></td>
+                    <td><a class="btn btn-care btn-sm" style="background-color: {{ colour }};" href="{% url 'action' 'complete' 'job' model.model_str item.id %}">Mark 'Complete'</a></td>
+                {% endif %}
+            </tr>
+            <tr><td>Start</td><td>{{ item.start }}</td><td></td></tr>
+            <tr><td>End</td><td>{{ item.end }}</td><td></td></tr>
+        </table>
+    </div>
+
+    <div class="col-6">
+        <h5>Notes</h5>
+
+        <form class="form-inline my-2 my-lg-0" method="POST" action="{% url 'job_notes' model.model_str item.id %}">
+            {% csrf_token %}
+            <textarea class="form-control" aria-label="With textarea" id="notes" name="notes">{{ item.notes | default:''}}</textarea><br>
+            <button type="submit" class="btn btn-care btn-sm"style="background-color: {{ colour }};" >Save Notes</button>
+        </form>
+    </div>
+</div>
+
+    {% if item.jobtype.medication %}
+        <h1>Medication</h1>
+        <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'new' 'medication' item.id 'patient' %}">New Medication</a>
+
+        {% if item.patient.medications %}
+            <table class="table">
+            <tr><th>Medication</th><th>Dosage</th><th>Frequency</th><th>Actions</th></tr>
+                {% for i in item.patient.medications %}
+                    <tr>
+                        <td>{{ i.medication_type }}</td>
+                        <td>{{ i.dosage }}</td>
+                        <td>{{ i.frequency }}</td>
+                        <td>
+                            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' 'medication' i.id model.model_str %}">Edit</a>
+                            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'delete' 'medication' i.id %}">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+
+    {% endif %}
+
+    <br><br>
+
+
 
 {% endblock %}

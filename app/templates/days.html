@@ -9,7 +9,7 @@
     <tr><th>Day</th><th>Staff (hours)</th><th>Jobs (hours)</th><th>Ratio</th></tr>
     {% for item in items %}
         <tr>
-            <td>{{ item }}</td>
+            <td><a href="{% url 'ind' model.model_str item.id %}">{{ item }}</a></td>
             <td>{{ item.working_hours }}</td>
             <td>{{ item.job_hours }}</td>
             <td>{{ item.working_over_jobs }}</td>

@@ -1,0 +1,66 @@
+{% extends 'base.html'%}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+<h1>{{ item }}</h1>
+
+<nav>
+  <ul class="pagination">
+      {% if item.previous %}
+    <li class="page-item"><a class="page-link" href="{% url 'ind' 'day' item.previous.id %}">{{ item.previous }}</a></li>
+      {% endif %}
+    <li class="page-item disabled"><a class="page-link" href="#">{{ item }}</a></li>
+      {% if item.next %}
+    <li class="page-item"><a class="page-link" href="{% url 'ind' 'day' item.next.id %}">{{ item.next }}</a></li>
+      {% endif %}
+  </ul>
+</nav>
+
+
+<h1>Shifts (Hours: {{ item.working_hours }})</h1>
+<table class="table">
+    <tr><th>Staff</th><th>Date</th><th>Shift</th><th>Start</th><th>End</th><th>Duration</th><th>Actions</th></tr>
+    {% for i in item.shifts %}
+        <tr>
+            <td>
+                {% if i.staff %}
+                    <a href="{% url 'ind' 'staff' i.staff.id %}">{{ i.staff }}</a>
+                {% endif %}
+            </td>
+            <td>{{ i.date }}</td>
+            <td>{{ i.shift }}</td>
+            <td>{{ i.start }}</td>
+            <td>{{ i.end }}</td>
+            <td>{{ i.duration }}</td>
+        <td>
+            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'ind' 'shift' i.id %}">View</a>
+            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' 'shift' i.id %}">Edit</a>
+        </td>
+        </tr>
+    {% endfor %}
+</table>
+
+
+<h1>Recurring Jobs (Hours: {{ item.job_hours }})</h1>
+<table class="table">
+    <tr><th>Job Type</th><th>Patient</th><th>Frequency</th><th>Duration</th><th>Actions</th></tr>
+    {% for item in item.recurring_jobs %}
+        <tr>
+            <td>{{ item.jobtype }}</td>
+            <td>
+                {% if item.patient %}
+                    <a href="{% url 'ind' 'patient' item.patient.id %}">{{ item.patient.name }}</a>
+                {% endif %}
+            </td>
+            <td>{{ item.frequency }}</td>
+            <td>{{ item.duration_hours }}</td>
+        <td>
+            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'ind' 'recurring_job' item.id %}">View</a>
+            <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'edit' 'recurring_job' item.id %}">Edit</a>
+        </td>
+        </tr>
+    {% endfor %}
+</table>
+
+
+{% endblock %}

@@ -3,9 +3,9 @@
 .btn-care {
     color: black;
     background-color: #50CDE6;
-    border-color: #50CDE6
-    padding: 10px
-}
+    border-color: #50CDE6;
+    margin-top: 2px;  /* Padding above the button */
+    margin-bottom: 2px;    }
 
 
 .django-ckeditor-widget {

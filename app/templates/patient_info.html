@@ -1,0 +1,35 @@
+{% extends 'base.html'%}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+<h1>{{ item.name }}</h1>
+
+<form class="form-inline my-2 my-lg-0" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row">
+        <div>
+        {% for info in item.info %}
+            {% ifchanged info.category %}
+                </div>
+                <div class="col-6">
+                <h5>{{ info.category }}</h5>
+            {% endifchanged %}
+                <div class="input-group mb-3">
+                  <span class="input-group-text">{{ info.field }}</span>
+                    {% if info.info_field.data_type == "date" %}
+                        <input type="date" class="form-control" value="{% if info.content %}{{ info.content }}{% endif %}" id="{{ info.field }}" name="{{ info.field }}">
+                    {% elif info.info_field.data_type == "text_area"%}
+                        <textarea class="form-control" aria-label="With textarea" id="{{ info.field }}" name="{{ info.field }}">{% if info.content %}{{ info.content }}{% endif %}</textarea>
+                    {% else %}
+                        <input type="text" class="form-control" value="{% if info.content %}{{ info.content }}{% endif %}" id="{{ info.field }}" name="{{ info.field }}">
+                    {% endif %}
+                </div>
+        {% endfor %}
+        </div>
+    </div>
+    <button type="submit" class="btn btn-care"style="background-color: {{ colour }};" >Save</button>
+    <a class="btn btn-care" style="background-color: {{ colour }};" href="{% url 'ind' model.model_str item.id %}">Back to '{{ item }}'</a>
+</form><br>
+
+
+{% endblock %}
